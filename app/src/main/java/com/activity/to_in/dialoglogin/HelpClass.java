@@ -28,9 +28,12 @@ import java.util.regex.Pattern;
 class HelpClass {
 
     /**
-     * @
+     * context, on which context the dialog appears and animation.
      */
     private Context context;
+    /**
+     * the button on which animation will end.
+     */
     private FloatingActionButton fab;
 
     // Login UI references.
@@ -39,6 +42,9 @@ class HelpClass {
     private View mProgressView;
     private View mLoginFormView;
 
+    /**
+     * keeps the track af user, logged in or not then only, close dialog and display animation.
+     */
     private boolean loginSuccess = false;
 
     /**
@@ -51,16 +57,23 @@ class HelpClass {
         this.fab = fab;
     }
 
+    /**
+     * Login form is shown in dialog box, and all the supporting thing needed for login,
+     * is maintained and exited only after user is logged in.
+     */
     void showLoginForm() {
 
-        // the layout to popped op
+        // the layout to popped up
         final View dialogView = View.inflate(context,R.layout.activity_login,null);
 
         mEmailView = dialogView.findViewById(R.id.email);
 
-        final Dialog dialog = new Dialog(context,R.style.DialogStyle);
+        // customisation of dialog box
+        final Dialog dialog = new Dialog(context, R.style.DialogStyle);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(dialogView);
+
+        // when ever user completes it's password it attempts login.
         mPasswordView = dialogView.findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -82,6 +95,7 @@ class HelpClass {
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("Maps Activity", "Attempting Login Activity");
                 attemptLogin();
                 if (loginSuccess)
                     circularAnimation(dialogView, false, dialog);
@@ -113,11 +127,18 @@ class HelpClass {
             }
         });
 
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
         dialog.show();
     }
 
+    /**
+     *
+     * @param dialogView: view on which animation is happening as, reveal or close.
+     * @param state: keeps track as what is need open or close. true means Open.
+     * @param loginLayout: the layout
+     */
     private void circularAnimation(View dialogView, final boolean state, final Dialog loginLayout) {
 
         final View view = dialogView.findViewById(R.id.login_activity);
@@ -164,6 +185,9 @@ class HelpClass {
 
     }
 
+    /**
+     * Checks, email and password on different parameter, and attempts login on basis of this.
+     */
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -212,6 +236,11 @@ class HelpClass {
         }
     }
 
+    /**
+     *  Checks emailId as, it is valid one or not. On basis of Regex.
+     * @param email: email ID from user
+     * @return returns true or false on basis of condition specified.
+     */
     private boolean isEmailValid(String email) {
         String expression = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
@@ -219,6 +248,11 @@ class HelpClass {
         return matcher.matches();
     }
 
+    /**
+     * checsks email on certain criteria as specified.
+     * @param password: password entered by user
+     * @return eturns true or false on basis of condition specified.
+     */
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 0;
@@ -251,6 +285,10 @@ class HelpClass {
             }
         });
     }
+
+    /**
+     * AsyncTask<> tracks different stages in Logging In. Before, After and onCancelled
+     */
     @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
